@@ -1,0 +1,26 @@
+name: Deploy DigiCryptoMarket-Test
+
+on:
+  push:
+    branches:
+      - test  # Trigger on push to the "test" branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Fetch the repository code
+
+    - name: Deploy to Lightsail-test
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.LIGHTSAIL_TEST_HOST }}        # Server IP
+        username: bitnami                          # SSH username
+        key: ${{ secrets.LIGHTSAIL_TEST_PRIVATE_KEY }}  # Private key from Secrets
+        port: 22                                   # SSH port
+        script: |
+          cd ../../bitnami/wordpress/wp-content/themes
+          git reset --hard
+          git pull origin test
